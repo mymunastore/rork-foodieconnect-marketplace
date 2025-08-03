@@ -113,35 +113,56 @@ export default function Button({
 const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   primaryContainer: {
     backgroundColor: Colors.primary,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   secondaryContainer: {
     backgroundColor: Colors.secondary,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   outlineContainer: {
     backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: Colors.primary,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   smallContainer: {
     paddingVertical: 8,
     paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   mediumContainer: {
     paddingVertical: 12,
     paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   largeContainer: {
     paddingVertical: 16,
     paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   disabledContainer: {
     backgroundColor: Colors.inactive,
     borderColor: Colors.inactive,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   text: {
     fontWeight: "600" as const,
