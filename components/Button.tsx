@@ -39,6 +39,8 @@ export default function Button({
     // Add size styles
     if (size === "small") {
       containerStyle.push(styles.smallContainer);
+    } else if (size === "medium") {
+      containerStyle.push(styles.mediumContainer);
     } else if (size === "large") {
       containerStyle.push(styles.largeContainer);
     }
@@ -115,43 +117,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   primaryContainer: {
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: Colors.primary,
   },
   secondaryContainer: {
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: Colors.secondary,
   },
   outlineContainer: {
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: Colors.primary,
   },
   smallContainer: {
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
+  mediumContainer: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
   largeContainer: {
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
   },
   disabledContainer: {
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: Colors.inactive,
     borderColor: Colors.inactive,
   },
@@ -159,27 +147,21 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   primaryText: {
-    fontWeight: "600",
     color: Colors.card,
   },
   secondaryText: {
-    fontWeight: "600",
     color: Colors.card,
   },
   outlineText: {
-    fontWeight: "600",
     color: Colors.primary,
   },
   smallText: {
-    fontWeight: "600",
     fontSize: 14,
   },
   largeText: {
-    fontWeight: "600",
     fontSize: 18,
   },
   disabledText: {
-    fontWeight: "600",
     color: Colors.card,
   },
 });

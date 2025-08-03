@@ -50,23 +50,19 @@ export default function ProfileScreen() {
   };
   
   const handleOrders = () => {
-    // In a real app, this would navigate to orders page
-    Alert.alert("Orders", "This would show your order history.");
+    router.push("/orders");
   };
   
   const handleAddresses = () => {
-    // In a real app, this would navigate to addresses page
-    Alert.alert("Addresses", "This would show your saved addresses.");
+    router.push("/addresses");
   };
   
   const handlePaymentMethods = () => {
-    // In a real app, this would navigate to payment methods page
-    Alert.alert("Payment Methods", "This would show your saved payment methods.");
+    router.push("/payment-methods");
   };
   
   const handleSettings = () => {
-    // In a real app, this would navigate to settings page
-    Alert.alert("Settings", "This would show app settings.");
+    router.push("/settings");
   };
   
   return (
