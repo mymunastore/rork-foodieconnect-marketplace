@@ -148,20 +148,26 @@ const styles = StyleSheet.create({
   },
   primaryText: {
     color: Colors.card,
+    fontWeight: "600" as const,
   },
   secondaryText: {
     color: Colors.card,
+    fontWeight: "600" as const,
   },
   outlineText: {
     color: Colors.primary,
+    fontWeight: "600" as const,
   },
   smallText: {
     fontSize: 14,
+    fontWeight: "600" as const,
   },
   largeText: {
     fontSize: 18,
+    fontWeight: "600" as const,
   },
   disabledText: {
     color: Colors.card,
+    fontWeight: "600" as const,
   },
 });
