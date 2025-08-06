@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, ViewStyle, ColorValue } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '@/constants/colors';
 
 interface GradientBackgroundProps {
   children: React.ReactNode;
-  colors?: string[];
+  colors?: readonly [ColorValue, ColorValue, ...ColorValue[]];
   style?: ViewStyle;
   start?: { x: number; y: number };
   end?: { x: number; y: number };
