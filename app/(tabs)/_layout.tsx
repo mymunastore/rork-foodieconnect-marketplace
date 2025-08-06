@@ -15,11 +15,30 @@ export default function TabLayout() {
             tabBarActiveTintColor: Colors.primary,
             tabBarInactiveTintColor: Colors.inactive,
             headerShown: true,
+            headerStyle: {
+              backgroundColor: Colors.background,
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.border,
+            },
+            headerTitleStyle: {
+              color: Colors.text,
+              fontWeight: "700",
+              fontSize: 20,
+            },
             tabBarStyle: {
+              backgroundColor: Colors.backgroundLight,
               borderTopWidth: 1,
               borderTopColor: Colors.border,
               elevation: 0,
               shadowOpacity: 0,
+              height: 90,
+              paddingBottom: 20,
+              paddingTop: 10,
+            },
+            tabBarLabelStyle: {
+              fontSize: 12,
+              fontWeight: "600",
+              marginTop: 4,
             },
           }}
         >

@@ -21,7 +21,7 @@ export default function SearchBar({ onFilterPress }: SearchBarProps) {
   return (
     <View style={styles.container}>
       <View style={styles.inputContainer}>
-        <Search size={20} color={Colors.textLight} style={styles.searchIcon} />
+        <Search size={22} color={Colors.textLight} style={styles.searchIcon} />
         <TextInput
           style={styles.input}
           placeholder="Search for restaurants, cuisines..."
@@ -39,7 +39,7 @@ export default function SearchBar({ onFilterPress }: SearchBarProps) {
           onPress={onFilterPress}
           testID="filter-button"
         >
-          <Sliders size={20} color={Colors.text} />
+          <Sliders size={22} color={Colors.card} />
         </TouchableOpacity>
       )}
     </View>
@@ -51,42 +51,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 20,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   inputContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 48,
+    backgroundColor: Colors.cardDark,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    height: 56,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: 12,
   },
   input: {
     flex: 1,
     fontSize: 16,
     color: Colors.text,
+    fontWeight: "500",
   },
   filterButton: {
-    backgroundColor: Colors.card,
-    borderRadius: 12,
-    width: 48,
-    height: 48,
+    backgroundColor: Colors.primary,
+    borderRadius: 16,
+    width: 56,
+    height: 56,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
 });

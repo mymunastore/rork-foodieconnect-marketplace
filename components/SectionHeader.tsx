@@ -14,7 +14,7 @@ export default function SectionHeader({ title, onSeeAll }: SectionHeaderProps) {
       {onSeeAll && (
         <TouchableOpacity onPress={onSeeAll} style={styles.seeAllButton}>
           <Text style={styles.seeAllText}>See All</Text>
-          <ChevronRight size={16} color={Colors.primary} />
+          <ChevronRight size={16} color={Colors.card} />
         </TouchableOpacity>
       )}
     </View>
@@ -26,22 +26,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 20,
     paddingHorizontal: 20,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "700",
+    fontSize: 22,
+    fontWeight: "800",
     color: Colors.text,
+    letterSpacing: -0.5,
   },
   seeAllButton: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
   seeAllText: {
     fontSize: 14,
     fontWeight: "600",
-    color: Colors.primary,
+    color: Colors.card,
     marginRight: 4,
   },
 });

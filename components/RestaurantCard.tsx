@@ -1,10 +1,9 @@
 import { Restaurant } from "@/types";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "@/constants/colors";
-import { Star } from "lucide-react-native";
+import { Star, Heart } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { useUser } from "@/hooks/useUserStore";
-import { Heart } from "lucide-react-native";
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -76,24 +75,26 @@ export default function RestaurantCard({ restaurant, featured }: RestaurantCardP
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.card,
-    borderRadius: 12,
+    backgroundColor: Colors.cardDark,
+    borderRadius: 16,
     overflow: "hidden",
     marginBottom: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
     width: "100%",
+    borderWidth: 1,
+    borderColor: Colors.border,
   },
   featuredContainer: {
-    width: 280,
+    width: 300,
     marginRight: 16,
   },
   imageContainer: {
     position: "relative",
-    height: 160,
+    height: 180,
   },
   image: {
     width: "100%",
@@ -104,72 +105,78 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 12,
     right: 12,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    borderRadius: 20,
-    padding: 8,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    borderRadius: 24,
+    padding: 10,
+    backdropFilter: "blur(10px)",
   },
   closedBadge: {
     position: "absolute",
     bottom: 12,
     left: 12,
-    backgroundColor: "rgba(0,0,0,0.7)",
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    backgroundColor: "rgba(239, 68, 68, 0.9)",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
   closedText: {
     color: Colors.card,
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   infoContainer: {
-    padding: 12,
+    padding: 16,
   },
   name: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
     color: Colors.text,
-    marginBottom: 4,
+    marginBottom: 6,
+    letterSpacing: -0.3,
   },
   detailsRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 6,
   },
   ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   rating: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "600",
     color: Colors.text,
     marginLeft: 4,
   },
   reviewCount: {
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.textLight,
     marginLeft: 2,
   },
   cuisineType: {
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.textLight,
+    fontWeight: "500",
   },
   priceRange: {
-    fontSize: 13,
-    color: Colors.textLight,
+    fontSize: 14,
+    color: Colors.accent,
+    fontWeight: "600",
   },
   deliveryTime: {
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.textLight,
+    fontWeight: "500",
   },
   distance: {
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.textLight,
+    fontWeight: "500",
   },
   dot: {
-    fontSize: 13,
-    color: Colors.textLight,
-    marginHorizontal: 4,
+    fontSize: 14,
+    color: Colors.textMuted,
+    marginHorizontal: 6,
   },
 });
