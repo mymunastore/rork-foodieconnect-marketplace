@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, Search, ShoppingBag, User } from "lucide-react-native";
+import { Home, Search, ShoppingBag, User, Sparkles } from "lucide-react-native";
 import React from "react";
 
 import { Colors } from "@/constants/colors";
@@ -45,6 +45,14 @@ export default function TabLayout() {
               title: "Cart",
               tabBarIcon: ({ color }) => <ShoppingBag color={color} size={24} />,
               headerTitle: "Your Cart",
+            }}
+          />
+          <Tabs.Screen
+            name="ai-assistant"
+            options={{
+              title: "AI Assistant",
+              tabBarIcon: ({ color }) => <Sparkles color={color} size={24} />,
+              headerTitle: "AI Assistant",
             }}
           />
           <Tabs.Screen
