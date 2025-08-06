@@ -25,7 +25,7 @@ export default function Button({
   testID,
 }: ButtonProps) {
   const getContainerStyle = () => {
-    let containerStyle = [styles.container];
+    const containerStyle: ViewStyle[] = [styles.container];
     
     // Add variant styles
     if (variant === "primary") {
@@ -118,50 +118,77 @@ const styles = StyleSheet.create({
   },
   primaryContainer: {
     backgroundColor: Colors.primary,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   secondaryContainer: {
     backgroundColor: Colors.secondary,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   outlineContainer: {
     backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: Colors.primary,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   smallContainer: {
     paddingVertical: 8,
     paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   mediumContainer: {
     paddingVertical: 12,
     paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   largeContainer: {
     paddingVertical: 16,
     paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   disabledContainer: {
     backgroundColor: Colors.inactive,
     borderColor: Colors.inactive,
+    borderRadius: 12,
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
   },
   text: {
     fontWeight: "600" as const,
   },
   primaryText: {
     color: Colors.card,
+    fontWeight: "600" as const,
   },
   secondaryText: {
     color: Colors.card,
+    fontWeight: "600" as const,
   },
   outlineText: {
     color: Colors.primary,
+    fontWeight: "600" as const,
   },
   smallText: {
     fontSize: 14,
+    fontWeight: "600" as const,
   },
   largeText: {
     fontSize: 18,
+    fontWeight: "600" as const,
   },
   disabledText: {
     color: Colors.card,
+    fontWeight: "600" as const,
   },
 });
