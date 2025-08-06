@@ -166,18 +166,9 @@ export default function AIAssistant() {
         playsInSilentModeIOS: true,
       });
 
-      const { recording } = await Audio.Recording.createAsync({
-        android: {
-          extension: '.m4a',
-          outputFormat: Audio.RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-          audioEncoder: Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
-        },
-        ios: {
-          extension: '.wav',
-          outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM,
-          audioQuality: Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH,
-        },
-      });
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
 
       setRecording(recording);
       setIsRecording(true);
@@ -369,7 +360,7 @@ export default function AIAssistant() {
           
           <TouchableOpacity 
             style={styles.sendButton}
-            onPress={() => sendMessage(inputText, selectedImage)}
+            onPress={() => sendMessage(inputText, selectedImage || undefined)}
             disabled={isLoading || (!inputText.trim() && !selectedImage)}
           >
             <Send size={20} color="white" />
