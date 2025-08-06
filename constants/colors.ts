@@ -21,9 +21,9 @@ export const Colors = {
   inactive: "#6B7280",
   rating: "#FBBF24",
   gradient: {
-    primary: ["#6366F1", "#8B5CF6"],
-    secondary: ["#1E293B", "#0F172A"],
-    accent: ["#F59E0B", "#EF4444"],
-    card: ["#334155", "#1E293B"],
+    primary: ["#6366F1", "#8B5CF6"] as const,
+    secondary: ["#1E293B", "#0F172A"] as const,
+    accent: ["#F59E0B", "#EF4444"] as const,
+    card: ["#334155", "#1E293B"] as const,
   },
 };
