@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,15 @@ import {
   Alert,
   Platform,
   StyleSheet,
+  Animated,
+
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { Audio } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
-import { Mic, Camera, Image as ImageIcon, Send, Sparkles } from 'lucide-react-native';
+import { Mic, Camera, Image as ImageIcon, Send, Sparkles, Brain, Zap, MessageCircle } from 'lucide-react-native';
 import { Colors } from '@/constants/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Message = {
   id: string;
@@ -22,6 +25,22 @@ type Message = {
   content: string;
   image?: string;
   timestamp: Date;
+  tokens?: number;
+  model?: string;
+};
+
+type Conversation = {
+  id: string;
+  title: string;
+  messages: Message[];
+  lastUpdated: Date;
+};
+
+type SmartSuggestion = {
+  id: string;
+  text: string;
+  category: 'food' | 'recipe' | 'restaurant' | 'general';
+  icon: string;
 };
 
 type ContentPart =
@@ -33,14 +52,138 @@ type CoreMessage =
   | { role: 'user'; content: string | ContentPart[] }
   | { role: 'assistant'; content: string };
 
+
+
 export default function AIAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recording, setRecording] = useState<Audio.Recording | null>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [smartSuggestions, setSmartSuggestions] = useState<SmartSuggestion[]>([]);
   const scrollViewRef = useRef<ScrollView>(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    loadConversations();
+    generateSmartSuggestions();
+    
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
+
+  useEffect(() => {
+    if (isRecording) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.2,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    } else {
+      pulseAnim.setValue(1);
+    }
+  }, [isRecording, pulseAnim]);
+
+  const loadConversations = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('ai_conversations');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setConversations(parsed);
+        if (parsed.length > 0) {
+          const latest = parsed[0];
+          setCurrentConversationId(latest.id);
+          setMessages(latest.messages);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading conversations:', error);
+    }
+  };
+
+  const saveConversations = async (updatedConversations: Conversation[]) => {
+    try {
+      await AsyncStorage.setItem('ai_conversations', JSON.stringify(updatedConversations));
+      setConversations(updatedConversations);
+    } catch (error) {
+      console.error('Error saving conversations:', error);
+    }
+  };
+
+  const generateSmartSuggestions = () => {
+    const suggestions: SmartSuggestion[] = [
+      {
+        id: '1',
+        text: 'What\'s a healthy Nigerian breakfast?',
+        category: 'food',
+        icon: '🍳'
+      },
+      {
+        id: '2', 
+        text: 'Show me how to make jollof rice',
+        category: 'recipe',
+        icon: '👨‍🍳'
+      },
+      {
+        id: '3',
+        text: 'Best restaurants near me',
+        category: 'restaurant', 
+        icon: '🏪'
+      },
+      {
+        id: '4',
+        text: 'Generate a food image',
+        category: 'general',
+        icon: '🎨'
+      },
+      {
+        id: '5',
+        text: 'Nutritional facts about plantain',
+        category: 'food',
+        icon: '📊'
+      },
+      {
+        id: '6',
+        text: 'Quick 15-minute meal ideas',
+        category: 'recipe',
+        icon: '⏱️'
+      }
+    ];
+    setSmartSuggestions(suggestions);
+  };
+
+  const startNewConversation = () => {
+    const newConversation: Conversation = {
+      id: Date.now().toString(),
+      title: 'New Chat',
+      messages: [],
+      lastUpdated: new Date(),
+    };
+    
+    setCurrentConversationId(newConversation.id);
+    setMessages([]);
+    setShowSuggestions(true);
+    
+    const updatedConversations = [newConversation, ...conversations];
+    saveConversations(updatedConversations);
+  };
 
   const sendMessage = async (text?: string, imageUri?: string) => {
     const messageText = text || inputText;
@@ -63,7 +206,15 @@ export default function AIAssistant() {
       const coreMessages: CoreMessage[] = [
         {
           role: 'system',
-          content: 'You are a helpful AI assistant integrated into a food delivery app. Help users with food recommendations, cooking tips, restaurant suggestions, and general assistance. Be friendly and concise.'
+          content: `You are an advanced AI assistant integrated into FoodieConnect, a premium Nigerian food delivery app. You have expertise in:
+          
+          🍽️ Nigerian cuisine, recipes, and cooking techniques
+          🏪 Restaurant recommendations and food delivery
+          🥗 Nutrition, dietary advice, and meal planning
+          🎨 Food photography and presentation
+          📱 App features and food ordering assistance
+          
+          Always be helpful, culturally aware, and provide actionable advice. When discussing Nigerian foods, include cultural context. For recipes, provide clear steps. For restaurants, consider location and preferences. Keep responses concise but informative.`
         },
         ...messages.map(msg => ({
           role: msg.role,
@@ -101,9 +252,30 @@ export default function AIAssistant() {
         role: 'assistant',
         content: data.completion,
         timestamp: new Date(),
+        model: 'gpt-4o',
+        tokens: data.completion.length,
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      const updatedMessages = [...messages, assistantMessage];
+      setMessages(updatedMessages);
+      setShowSuggestions(false);
+      
+      // Update conversation
+      if (currentConversationId) {
+        const updatedConversations = conversations.map(conv => 
+          conv.id === currentConversationId 
+            ? { 
+                ...conv, 
+                messages: updatedMessages,
+                title: updatedMessages.length === 2 ? messageText.slice(0, 30) + '...' : conv.title,
+                lastUpdated: new Date()
+              }
+            : conv
+        );
+        saveConversations(updatedConversations);
+      }
+
+
     } catch (error) {
       console.error('Error sending message:', error);
       Alert.alert('Error', 'Failed to send message. Please try again.');
@@ -134,9 +306,10 @@ export default function AIAssistant() {
       const imageMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: `Generated image: ${prompt}`,
+        content: `🎨 Generated: ${prompt}`,
         image: imageUri,
         timestamp: new Date(),
+        model: 'dall-e-3',
       };
 
       setMessages(prev => [...prev, imageMessage]);
@@ -166,9 +339,31 @@ export default function AIAssistant() {
         playsInSilentModeIOS: true,
       });
 
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RecordingOptionsPresets.HIGH_QUALITY
-      );
+      const { recording } = await Audio.Recording.createAsync({
+        android: {
+          extension: '.m4a',
+          outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+          audioEncoder: Audio.AndroidAudioEncoder.AAC,
+          sampleRate: 44100,
+          numberOfChannels: 2,
+          bitRate: 128000,
+        },
+        ios: {
+          extension: '.wav',
+          outputFormat: Audio.IOSOutputFormat.LINEARPCM,
+          audioQuality: Audio.IOSAudioQuality.HIGH,
+          sampleRate: 44100,
+          numberOfChannels: 2,
+          bitRate: 128000,
+          linearPCMBitDepth: 16,
+          linearPCMIsBigEndian: false,
+          linearPCMIsFloat: false,
+        },
+        web: {
+          mimeType: 'audio/webm',
+          bitsPerSecond: 128000,
+        },
+      });
 
       setRecording(recording);
       setIsRecording(true);
@@ -268,36 +463,66 @@ export default function AIAssistant() {
         {messages.length === 0 && (
           <View style={styles.welcomeContainer}>
             <Sparkles size={48} color={Colors.primary} />
-            <Text style={styles.welcomeTitle}>AI Assistant</Text>
-            <Text style={styles.welcomeText}>
-              Ask me about food recommendations, recipes, restaurants, or anything else!
-            </Text>
-            <View style={styles.suggestionsContainer}>
-              <TouchableOpacity 
-                style={styles.suggestionButton}
-                onPress={() => sendMessage('Recommend a Nigerian dish for dinner')}
-              >
-                <Text style={styles.suggestionText}>Nigerian dinner ideas</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.suggestionButton}
-                onPress={() => generateImage('Delicious jollof rice with grilled chicken')}
-              >
-                <Text style={styles.suggestionText}>Generate food image</Text>
-              </TouchableOpacity>
-            </View>
+            <Animated.View style={[styles.welcomeHeader, { opacity: fadeAnim }]}>
+              <View style={styles.aiIconContainer}>
+                <Brain size={32} color={Colors.primary} />
+                <Sparkles size={20} color="#FFD700" style={styles.sparkleIcon} />
+              </View>
+              <Text style={styles.welcomeTitle}>FoodieConnect AI</Text>
+              <Text style={styles.welcomeSubtitle}>Powered by GPT-4o & DALL-E 3</Text>
+              <Text style={styles.welcomeText}>
+                Your intelligent food companion for Nigerian cuisine, recipes, and dining experiences
+              </Text>
+            </Animated.View>
+            
+            {showSuggestions && (
+              <Animated.View style={[styles.suggestionsContainer, { opacity: fadeAnim }]}>
+                <Text style={styles.suggestionsTitle}>✨ Try asking me about:</Text>
+                <View style={styles.suggestionsGrid}>
+                  {smartSuggestions.map((suggestion) => (
+                    <TouchableOpacity 
+                      key={suggestion.id}
+                      style={styles.suggestionCard}
+                      onPress={() => {
+                        if (suggestion.category === 'general' && suggestion.text.includes('image')) {
+                          generateImage('Delicious Nigerian jollof rice with grilled chicken and plantain');
+                        } else {
+                          sendMessage(suggestion.text);
+                        }
+                      }}
+                    >
+                      <Text style={styles.suggestionIcon}>{suggestion.icon}</Text>
+                      <Text style={styles.suggestionText}>{suggestion.text}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </Animated.View>
+            )}
           </View>
         )}
         
-        {messages.map((message) => (
-          <View key={message.id} style={[
-            styles.messageContainer,
-            message.role === 'user' ? styles.userMessage : styles.assistantMessage
-          ]}>
+        {messages.map((message, index) => (
+          <Animated.View 
+            key={message.id} 
+            style={[
+              styles.messageContainer,
+              message.role === 'user' ? styles.userMessage : styles.assistantMessage,
+              { opacity: fadeAnim }
+            ]}
+          >
             <View style={[
               styles.messageBubble,
               message.role === 'user' ? styles.userBubble : styles.assistantBubble
             ]}>
+              {message.role === 'assistant' && (
+                <View style={styles.assistantHeader}>
+                  <Brain size={16} color={Colors.primary} />
+                  <Text style={styles.assistantLabel}>FoodieConnect AI</Text>
+                  {message.model && (
+                    <Text style={styles.modelBadge}>{message.model}</Text>
+                  )}
+                </View>
+              )}
               {message.image && (
                 <Image source={{ uri: message.image }} style={styles.messageImage} />
               )}
@@ -307,8 +532,11 @@ export default function AIAssistant() {
               ]}>
                 {message.content}
               </Text>
+              <Text style={styles.timestamp}>
+                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </Text>
             </View>
-          </View>
+          </Animated.View>
         ))}
         
         {isLoading && (
@@ -333,6 +561,16 @@ export default function AIAssistant() {
       )}
 
       <View style={styles.inputContainer}>
+        <View style={styles.inputHeader}>
+          <TouchableOpacity style={styles.newChatButton} onPress={startNewConversation}>
+            <MessageCircle size={16} color={Colors.primary} />
+            <Text style={styles.newChatText}>New Chat</Text>
+          </TouchableOpacity>
+          <View style={styles.conversationInfo}>
+            <Text style={styles.conversationCount}>{messages.length} messages</Text>
+          </View>
+        </View>
+        
         <View style={styles.inputRow}>
           <TouchableOpacity style={styles.actionButton} onPress={pickImage}>
             <ImageIcon size={20} color={Colors.primary} />
@@ -342,28 +580,40 @@ export default function AIAssistant() {
             <Camera size={20} color={Colors.primary} />
           </TouchableOpacity>
           
-          <TouchableOpacity 
-            style={[styles.actionButton, isRecording && styles.recordingButton]}
-            onPress={isRecording ? stopRecording : startRecording}
-          >
-            <Mic size={20} color={isRecording ? 'white' : Colors.primary} />
-          </TouchableOpacity>
+          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+            <TouchableOpacity 
+              style={[styles.actionButton, isRecording && styles.recordingButton]}
+              onPress={isRecording ? stopRecording : startRecording}
+            >
+              <Mic size={20} color={isRecording ? 'white' : Colors.primary} />
+            </TouchableOpacity>
+          </Animated.View>
           
           <TextInput
             style={styles.textInput}
             value={inputText}
             onChangeText={setInputText}
-            placeholder="Ask me anything..."
+            placeholder="Ask about Nigerian food, recipes, restaurants..."
             multiline
             maxLength={1000}
+            placeholderTextColor="#999"
           />
           
           <TouchableOpacity 
-            style={styles.sendButton}
+            style={[
+              styles.sendButton,
+              (isLoading || (!inputText.trim() && !selectedImage)) && styles.sendButtonDisabled
+            ]}
             onPress={() => sendMessage(inputText, selectedImage || undefined)}
             disabled={isLoading || (!inputText.trim() && !selectedImage)}
           >
-            <Send size={20} color="white" />
+            {isLoading ? (
+              <Animated.View style={{ transform: [{ rotate: '360deg' }] }}>
+                <Zap size={20} color="white" />
+              </Animated.View>
+            ) : (
+              <Send size={20} color="white" />
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -517,5 +767,112 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  sendButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  welcomeHeader: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  aiIconContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
+  sparkleIcon: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+  },
+  welcomeSubtitle: {
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 8,
+    fontWeight: '500',
+  },
+  suggestionsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  suggestionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  suggestionCard: {
+    backgroundColor: 'white',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+    minWidth: 140,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  suggestionIcon: {
+    fontSize: 20,
+    marginBottom: 4,
+  },
+  assistantHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 6,
+  },
+  assistantLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  modelBadge: {
+    fontSize: 10,
+    color: '#888',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+    marginLeft: 'auto',
+  },
+  timestamp: {
+    fontSize: 11,
+    color: '#888',
+    marginTop: 4,
+    textAlign: 'right',
+  },
+  inputHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  newChatButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    gap: 6,
+  },
+  newChatText: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: '500',
+  },
+  conversationInfo: {
+    alignItems: 'flex-end',
+  },
+  conversationCount: {
+    fontSize: 12,
+    color: '#888',
   },
 });
