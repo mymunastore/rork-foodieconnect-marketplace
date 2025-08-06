@@ -13,7 +13,7 @@ interface GradientBackgroundProps {
 
 export default function GradientBackground({
   children,
-  colors = Colors.gradient.secondary,
+  colors = Colors.gradient.secondary as readonly [ColorValue, ColorValue, ...ColorValue[]],
   style,
   start = { x: 0, y: 0 },
   end = { x: 0, y: 1 },
